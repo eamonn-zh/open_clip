@@ -283,7 +283,7 @@ class CLIP(nn.Module):
             else:
                 x = x @ self.text_projection
 
-        return tokens, F.normalize(x, dim=-1) if normalize else tokens, x
+        return (tokens, F.normalize(x, dim=-1)) if normalize else (tokens, x)
 
     def get_logits(self, image, text):
         image_features = self.encode_image(image, normalize=True)
