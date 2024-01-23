@@ -276,14 +276,14 @@ class CLIP(nn.Module):
         x = self.transformer(x, attn_mask=self.attn_mask)
         x = x.permute(1, 0, 2)  # LND -> NLD
         x = self.ln_final(x)  # [batch_size, n_ctx, transformer.width]
-        x, _ = text_global_pool(x, text, self.text_pool_type)
+        x, tokens = text_global_pool(x, text, self.text_pool_type)
         if self.text_projection is not None:
             if isinstance(self.text_projection, nn.Linear):
                 x = self.text_projection(x)
             else:
                 x = x @ self.text_projection
 
-        return F.normalize(x, dim=-1) if normalize else x
+        return tokens, F.normalize(x, dim=-1) if normalize else tokens, x
 
     def get_logits(self, image, text):
         image_features = self.encode_image(image, normalize=True)
